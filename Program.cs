@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ToDo.Data;
+using ToDo.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,10 @@ builder.Services.AddDbContext<DataDbContext>(options => {
      .EnableSensitiveDataLogging()
      .EnableDetailedErrors();
 });
+
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
