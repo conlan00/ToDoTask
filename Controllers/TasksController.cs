@@ -47,5 +47,56 @@ namespace ToDo.Controllers
                 return BadRequest("Task not exist");
             }
         }
+        [HttpDelete("deleteTask/{id}")]
+        public async Task<IActionResult> DeleteTask(int id)
+        {
+            var deleteTask= await _taskRepository.DeleteTask(id);
+            //if deleted
+            if (deleteTask)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest("Task not exist in db");
+            }
+        }
+        [HttpPut("updateTask/{id}")]
+        public async Task<IActionResult> UpdateTask(int id, [FromBody] Models.Task updatedTask)
+        {
+            //return task by id 
+            var existTask = await _taskRepository.GetTaskById(id);
+            //if task exist update properties without Percent
+            if (existTask != null)
+            {
+                existTask.ExpiryDateTime = updatedTask.ExpiryDateTime;
+                existTask.Title = updatedTask.Title;
+                existTask.Description = updatedTask.Description;
+                await _taskRepository.UpdateTask(existTask);
+                return Ok();
+            }
+            else
+            {
+                return BadRequest("Task not exist");
+            }
+        }
+        [HttpGet("getTaskForToday")]
+        public async Task<IActionResult> GetTaskForToday()
+        {
+            var tasks = await _taskRepository.GetTaskForToday();
+            if (tasks.Any())
+            {
+                return Ok(tasks);
+            }
+            else
+            {
+                return BadRequest("Don't have tasks for today");
+            }
+        }
+
+
+
+
+
     }
 }

@@ -43,8 +43,43 @@ namespace ToDo.Repositories
         //get task by Id
         public async Task<Models.Task?> GetTaskById(int id)
         {
-            //using Orm to get specific task using id
-            return  await _dbContext.Task.FindAsync(id);
+            
+            return await _dbContext.Task.FindAsync(id);
         }
+        //delete task by id 
+        public async Task<bool> DeleteTask(int id)
+        {
+            //find element in db 
+            var isExistingTask = await _dbContext.Task.FindAsync(id);
+            //if exist 
+            if(isExistingTask!=null)
+            {
+                _dbContext.Task.Remove(isExistingTask);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        //update task
+        public async Task<bool> UpdateTask(Models.Task model)
+        {
+            _dbContext.Task.Update(model);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+        //get incoming to do for today 
+        public async Task<List<Models.Task>> GetTaskForToday()
+        {
+            var today = DateTime.Today;
+            //using Orm to get task using Date
+            return await _dbContext.Task
+                .Where(i => i.ExpiryDateTime.Date == today)
+                .ToListAsync();
+        }
+        
+
     }
 }
